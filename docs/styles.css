@@ -1,0 +1,125 @@
+:root {
+    font-size: 14px;
+  }
+
+  body {
+    margin: 0;
+    padding: 40px 30px;
+    height: 100vh;
+    background-color: #ffdb00;
+    font-family: 'Roboto', Helvetica, sans-serif;
+    font-size: 1rem;
+    line-height: 1.2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+
+  header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .logo {
+    width: 120px;
+    overflow: hidden;
+  }
+
+  .logo--white path {
+    fill: #fff;
+  }
+
+  .logo svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .header__button {
+    z-index: 2;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: black;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: -18px;
+    outline: none;
+  }
+
+  .header__button[data-open="true"] {
+    background-color: #ffdb00;
+    animation-name: scale;
+    animation-duration: 300ms;
+    animation-timing-function: ease;
+  }
+
+  @keyframes scale {
+    from {
+      transform: scale(0);
+    }
+
+    to {
+      transform: scale(100%);
+    }
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    margin: 0;
+    margin-bottom: 3rem;
+  }
+
+  footer svg {
+    width: 15%;
+  }
+
+  .header__nav {
+    background-color: black;
+    position: fixed;
+    overflow: hidden;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    visibility: hidden;
+    clip-path: circle(var(--radius) at calc(100% - 55px) 47px);
+  }
+
+  .header__nav[data-active="true"] {
+    visibility: visible;
+  }
+
+  .header__menu {
+    padding: 0;
+    margin: 0;
+  }
+
+  .header__menu > .header__menu-item {
+    font-size: 10vh;
+  }
+
+  .header__menu > .header__menu-item:not(:last-of-type) {
+    margin-bottom: 0.1em;
+  }
+
+  .header__menu-item a {
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+  }
+
+  .header__menu-item a:hover {
+    font-style: italic;
+  }
