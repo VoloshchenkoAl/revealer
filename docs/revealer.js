@@ -9,9 +9,20 @@ var revealer = (function () {
         var reqId = null;
         var targetRadius = initialRedius;
         var elementRadius = targetRadius;
+        var getCirclePosition = function () {
+            var _a = actionBtnEl.getBoundingClientRect(), top = _a.top, left = _a.left, height = _a.height, width = _a.width;
+            var leftPosition = left + width / 2 + "px";
+            var topPosition = top + height / 2 + "px";
+            return { left: leftPosition, top: topPosition };
+        };
+        var setCirclePosition = function () {
+            var _a = getCirclePosition(), left = _a.left, top = _a.top;
+            var circlePosition = left + " " + top;
+            revealBlock.style.clipPath = "circle(var(--radius) at " + circlePosition + ")";
+        };
         var initRevealBlock = function () {
-            revealBlock.style.clipPath = "circle(var(--radius) at 20% 20%)";
             revealBlockEl.style.setProperty('--radius', initialRedius + "px");
+            setCirclePosition();
             revealBlockEl.setAttribute('data-active', 'true');
         };
         var getTargetRadius = function (inMenuOpen) {
@@ -37,13 +48,14 @@ var revealer = (function () {
         };
         var onReveal = function () {
             isMenuOpen = !isMenuOpen;
-            actionBtnEl.setAttribute('data-open', 'isMenuOpen');
+            actionBtnEl.setAttribute('data-open', "" + isMenuOpen);
             targetRadius = getTargetRadius(isMenuOpen);
             animationStart();
         };
         initRevealBlock();
         actionBtnEl.addEventListener('click', onReveal);
     }
+    //# sourceMappingURL=index.js.map
 
     return revealer;
 

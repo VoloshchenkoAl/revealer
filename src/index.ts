@@ -8,9 +8,24 @@ function revealer(actionBtn: HTMLElement, revealBlock: HTMLElement): void {
     let targetRadius: number = initialRedius;
     let elementRadius: number = targetRadius;
 
+    const getCirclePosition = () => {
+        const { top, left, height, width } = actionBtnEl.getBoundingClientRect();
+        const leftPosition = `${left + width / 2}px`;
+        const topPosition = `${top + height / 2}px`;
+
+        return { left: leftPosition, top: topPosition };
+    };
+
+    const setCirclePosition = () => {
+        const { left, top } = getCirclePosition();
+        const circlePosition = `${left} ${top}`;
+
+        revealBlock.style.clipPath = `circle(var(--radius) at ${circlePosition})`;
+    };
+
     const initRevealBlock = (): void => {
-        revealBlock.style.clipPath = `circle(var(--radius) at 20% 20%)`;
         revealBlockEl.style.setProperty('--radius', `${initialRedius}px`);
+        setCirclePosition();
         revealBlockEl.setAttribute('data-active', 'true');
     };
 
@@ -46,7 +61,7 @@ function revealer(actionBtn: HTMLElement, revealBlock: HTMLElement): void {
 
     const onReveal = (): void => {
         isMenuOpen = !isMenuOpen;
-        actionBtnEl.setAttribute('data-open', 'isMenuOpen');
+        actionBtnEl.setAttribute('data-open', `${isMenuOpen}`);
         targetRadius = getTargetRadius(isMenuOpen);
         animationStart();
     };
