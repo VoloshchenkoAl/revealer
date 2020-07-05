@@ -1,4 +1,4 @@
 node_modules
-design
+dist
 docs
-__tests__/
+coverage/*

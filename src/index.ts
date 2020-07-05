@@ -1,73 +1,71 @@
 function revealer(actionBtn: HTMLElement, revealBlock: HTMLElement): void {
-    const actionBtnEl: HTMLElement = actionBtn;
-    const revealBlockEl: HTMLElement = revealBlock;
-    const initialRedius: number = 0;
+  const actionBtnEl: HTMLElement = actionBtn;
+  const revealBlockEl: HTMLElement = revealBlock;
+  const initialRadius = 0;
 
-    let isMenuOpen: boolean = false;
-    let reqId: number = null;
-    let targetRadius: number = initialRedius;
-    let elementRadius: number = targetRadius;
+  let isMenuOpen = false;
+  let reqId: number = null;
+  let targetRadius: number = initialRadius;
+  let elementRadius: number = targetRadius;
 
-    const getCirclePosition = () => {
-        const { top, left, height, width } = actionBtnEl.getBoundingClientRect();
-        const leftPosition = `${left + width / 2}px`;
-        const topPosition = `${top + height / 2}px`;
+  const getMinimumRadius = (): number => {
+    const { innerHeight, innerWidth } = window;
 
-        return { left: leftPosition, top: topPosition };
-    };
+    return Math.sqrt(innerHeight ** 2 + innerWidth ** 2);
+  };
 
-    const setCirclePosition = () => {
-        const { left, top } = getCirclePosition();
-        const circlePosition = `${left} ${top}`;
+  const animationStop = (): void => {
+    cancelAnimationFrame(reqId);
+    reqId = null;
+  };
 
-        revealBlock.style.clipPath = `circle(var(--radius) at ${circlePosition})`;
-    };
+  const getCirclePosition = () => {
+    const { top, left, height, width } = actionBtnEl.getBoundingClientRect();
+    const leftPosition = `${left + width / 2}px`;
+    const topPosition = `${top + height / 2}px`;
 
-    const initRevealBlock = (): void => {
-        revealBlockEl.style.setProperty('--radius', `${initialRedius}px`);
-        setCirclePosition();
-        revealBlockEl.setAttribute('data-active', 'true');
-    };
+    return { left: leftPosition, top: topPosition };
+  };
 
-    const getTargetRadius = (inMenuOpen: boolean): number => {
-        return inMenuOpen ? getMinimumRadius() : initialRedius;
-    };
+  const setCirclePosition = () => {
+    const { left, top } = getCirclePosition();
+    const circlePosition = `${left} ${top}`;
 
-    const getMinimumRadius = (): number => {
-        const { innerHeight, innerWidth } = window;
+    // eslint-disable-next-line no-param-reassign
+    revealBlock.style.clipPath = `circle(var(--radius) at ${circlePosition})`;
+  };
 
-        return Math.sqrt(innerHeight ** 2 + innerWidth ** 2);
-    };
+  const initRevealBlock = (): void => {
+    revealBlockEl.style.setProperty('--radius', `${initialRadius}px`);
+    setCirclePosition();
+    revealBlockEl.setAttribute('data-active', 'true');
+  };
 
-    const animationStart = (): void => {
-        elementRadius += (targetRadius - elementRadius) * 0.08;
-        revealBlockEl.style.setProperty('--radius', `${elementRadius}px`);
+  const animationStart = (): void => {
+    elementRadius += (targetRadius - elementRadius) * 0.08;
+    revealBlockEl.style.setProperty('--radius', `${elementRadius}px`);
 
-        reqId = requestAnimationFrame(animationStart);
+    reqId = requestAnimationFrame(animationStart);
 
-        // some bug with smal black point
-        const isStopAnimation: boolean =
-            isMenuOpen ? elementRadius > targetRadius : Math.round(elementRadius) === Math.round(targetRadius);
+    // some bug with small black point
+    const isStopAnimation: boolean = isMenuOpen
+      ? elementRadius > targetRadius
+      : Math.round(elementRadius) === Math.round(targetRadius);
 
-        if (isStopAnimation) {
-            animationStop();
-        }
-    };
+    if (isStopAnimation) {
+      animationStop();
+    }
+  };
 
-    const animationStop = (): void => {
-        cancelAnimationFrame(reqId);
-        reqId = null;
-    };
+  const onReveal = (): void => {
+    isMenuOpen = !isMenuOpen;
+    actionBtnEl.setAttribute('data-open', `${isMenuOpen}`);
+    targetRadius = isMenuOpen ? getMinimumRadius() : initialRadius;
+    animationStart();
+  };
 
-    const onReveal = (): void => {
-        isMenuOpen = !isMenuOpen;
-        actionBtnEl.setAttribute('data-open', `${isMenuOpen}`);
-        targetRadius = getTargetRadius(isMenuOpen);
-        animationStart();
-    };
-
-    initRevealBlock();
-    actionBtnEl.addEventListener('click', onReveal);
+  initRevealBlock();
+  actionBtnEl.addEventListener('click', onReveal);
 }
 
 export default revealer;
