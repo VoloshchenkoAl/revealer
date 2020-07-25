@@ -1,4 +1,4 @@
-name: Node.js Package
+name: Publish npm package
 
 on:
   release:
@@ -16,7 +16,7 @@ jobs:
       - run: npm run lint
 
   publish-npm:
-    needs: build
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
