@@ -5,9 +5,9 @@ import { Revealer, RevealerParam, Position } from './types';
 import { getCircleCenterPosition, getRevealRadius } from './helpers';
 
 function revealer(revealerOptions: RevealerParam): Revealer {
+  const initialRadius = 0;
   const { revealElementSelector, options } = revealerOptions;
   const revealBlock = document.querySelector(revealElementSelector) as HTMLElement;
-  const initialRadius = 0;
 
   let isReveal = false;
   let reqId: number = null;
