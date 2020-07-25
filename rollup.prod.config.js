@@ -14,6 +14,11 @@ export default () => ({
       file: pkg.module,
       format: 'es',
     },
+    {
+      file: pkg.iife,
+      name: 'revealer',
+      format: 'iife',
+    },
   ],
   plugins: [typescript(), terser()],
 });

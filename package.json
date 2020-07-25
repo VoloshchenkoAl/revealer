@@ -1,8 +1,9 @@
 {
   "name": "circular-revealer",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "iife": "dist/index.iife.js",
   "files": [
     "dist/*"
   ],
