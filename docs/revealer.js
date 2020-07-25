@@ -1,66 +1,143 @@
 var revealer = (function () {
   'use strict';
 
-  function revealer(actionBtn, revealBlock) {
-    var actionBtnEl = actionBtn;
-    var revealBlockEl = revealBlock;
+  var getElementCenterPosition = function (elementSelector) {
+    var element = document.querySelector(elementSelector);
+    if (!element) {
+      throw new Error('Element with selector ' + elementSelector + ' have not been founded');
+    }
+    var calculateCenter = function (a0, a1) {
+      return (a1 - a0) / 2;
+    };
+    var _a = element.getBoundingClientRect(),
+      elementX = _a.x,
+      elementY = _a.y,
+      bottom = _a.bottom,
+      right = _a.right,
+      left = _a.left,
+      top = _a.top;
+    return {
+      x: left + calculateCenter(elementX, right) + 'px',
+      y: top + calculateCenter(elementY, bottom) + 'px',
+    };
+  };
+  var getCircleCenterPosition = function (revealerSelector, anchorSelector, position) {
+    if (typeof anchorSelector === 'string') {
+      return getElementCenterPosition(anchorSelector);
+    }
+    if (
+      typeof (position === null || position === void 0 ? void 0 : position.x) === 'string' &&
+      typeof (position === null || position === void 0 ? void 0 : position.y) === 'string'
+    ) {
+      return position;
+    }
+    return getElementCenterPosition(revealerSelector);
+  };
+  var getRevealRadius = function (revealerSelector) {
+    var innerHeight = window.innerHeight,
+      innerWidth = window.innerWidth;
+    if (typeof revealerSelector === 'string') {
+      var revealerBlock = document.querySelector(revealerSelector);
+      var _a = revealerBlock.getBoundingClientRect(),
+        elementWidth = _a.width,
+        elementHeight = _a.height;
+      innerHeight = elementHeight;
+      innerWidth = elementWidth;
+    }
+    return Math.sqrt(Math.pow(innerHeight, 2) + Math.pow(innerWidth, 2));
+  };
+
+  /* @Helpers */
+  function revealer(revealerOptions) {
+    var revealElementSelector = revealerOptions.revealElementSelector,
+      options = revealerOptions.options;
+    var revealBlock = document.querySelector(revealElementSelector);
     var initialRadius = 0;
-    var isMenuOpen = false;
+    var isReveal = false;
     var reqId = null;
     var targetRadius = initialRadius;
     var elementRadius = targetRadius;
-    var getMinimumRadius = function () {
-      var innerHeight = window.innerHeight,
-        innerWidth = window.innerWidth;
-      return Math.sqrt(Math.pow(innerHeight, 2) + Math.pow(innerWidth, 2));
+    var revealPosition = getCircleCenterPosition(
+      revealElementSelector,
+      options === null || options === void 0 ? void 0 : options.anchorSelector,
+      options === null || options === void 0 ? void 0 : options.position,
+    );
+    var setCircleClipPath = function () {
+      revealBlock.style.clipPath =
+        'circle(' + elementRadius + 'px at ' + revealPosition.x + ' ' + revealPosition.y + ')';
     };
-    var animationStop = function () {
+    var updateElementRadius = function () {
+      elementRadius += (targetRadius - elementRadius) * 0.08;
+    };
+    var cancelAnimation = function () {
       cancelAnimationFrame(reqId);
       reqId = null;
     };
-    var getCirclePosition = function () {
-      var _a = actionBtnEl.getBoundingClientRect(),
-        top = _a.top,
-        left = _a.left,
-        height = _a.height,
-        width = _a.width;
-      var leftPosition = left + width / 2 + 'px';
-      var topPosition = top + height / 2 + 'px';
-      return { left: leftPosition, top: topPosition };
-    };
-    var setCirclePosition = function () {
-      var _a = getCirclePosition(),
-        left = _a.left,
-        top = _a.top;
-      var circlePosition = left + ' ' + top;
-      // eslint-disable-next-line no-param-reassign
-      revealBlock.style.clipPath = 'circle(var(--radius) at ' + circlePosition + ')';
+    var animationStop = function () {
+      elementRadius = targetRadius;
+      setCircleClipPath();
+      cancelAnimation();
     };
     var initRevealBlock = function () {
-      revealBlockEl.style.setProperty('--radius', initialRadius + 'px');
-      setCirclePosition();
-      revealBlockEl.setAttribute('data-active', 'true');
+      setCircleClipPath();
+      revealBlock.setAttribute('data-active', 'true');
     };
-    var animationStart = function () {
-      elementRadius += (targetRadius - elementRadius) * 0.08;
-      revealBlockEl.style.setProperty('--radius', elementRadius + 'px');
-      reqId = requestAnimationFrame(animationStart);
-      // some bug with small black point
-      var isStopAnimation = isMenuOpen
-        ? elementRadius > targetRadius
-        : Math.round(elementRadius) === Math.round(targetRadius);
+    var revealAnimation = function () {
+      updateElementRadius();
+      var isStopAnimation = elementRadius - targetRadius > -2;
+      if (!isReveal) {
+        cancelAnimation();
+      }
       if (isStopAnimation) {
         animationStop();
+        return;
       }
+      setCircleClipPath();
+      reqId = requestAnimationFrame(revealAnimation);
     };
-    var onReveal = function () {
-      isMenuOpen = !isMenuOpen;
-      actionBtnEl.setAttribute('data-open', '' + isMenuOpen);
-      targetRadius = isMenuOpen ? getMinimumRadius() : initialRadius;
-      animationStart();
+    var hideAnimation = function () {
+      updateElementRadius();
+      var isStopAnimation = Math.abs(elementRadius - targetRadius) < 2;
+      if (isReveal) {
+        cancelAnimation();
+      }
+      if (isStopAnimation) {
+        animationStop();
+        return;
+      }
+      setCircleClipPath();
+      reqId = requestAnimationFrame(hideAnimation);
+    };
+    var isRevealed = function () {
+      return isReveal;
+    };
+    var reveal = function () {
+      if (isReveal) {
+        return;
+      }
+      revealPosition = getCircleCenterPosition(
+        revealElementSelector,
+        options === null || options === void 0 ? void 0 : options.anchorSelector,
+        options === null || options === void 0 ? void 0 : options.position,
+      );
+      targetRadius = getRevealRadius(revealElementSelector);
+      revealAnimation();
+      isReveal = true;
+    };
+    var hide = function () {
+      if (!isReveal) {
+        return;
+      }
+      targetRadius = initialRadius;
+      hideAnimation();
+      isReveal = false;
     };
     initRevealBlock();
-    actionBtnEl.addEventListener('click', onReveal);
+    return {
+      isRevealed: isRevealed,
+      reveal: reveal,
+      hide: hide,
+    };
   }
 
   return revealer;

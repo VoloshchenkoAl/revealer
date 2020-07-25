@@ -13,7 +13,6 @@ export default () => ({
     typescript(),
     serve({
       open: true,
-      port: 3031,
       contentBase: 'docs',
     }),
   ],

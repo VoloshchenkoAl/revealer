@@ -49,13 +49,17 @@ header {
   right: 0;
   top: -18px;
   outline: none;
+  animation-duration: 300ms;
+  animation-timing-function: ease;
 }
 
 .header__button[data-open='true'] {
-  background-color: #ffdb00;
+  background-color: hsl(52, 100%, 50%);
   animation-name: scale;
-  animation-duration: 300ms;
-  animation-timing-function: ease;
+}
+
+.header__button[data-open='false'] {
+  transition: background-color 250ms linear;
 }
 
 @keyframes scale {

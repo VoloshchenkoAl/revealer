@@ -1,6 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const actionBtn = document.querySelector('.nav-btn-js');
-  const revealBlock = document.querySelector('.nav-js');
+  const revealerNav = window.revealer({
+    revealElementSelector: '.nav-js',
+    options: {
+      anchorSelector: '.nav-btn-js',
+    },
+  });
 
-  window.revealer(actionBtn, revealBlock);
+  const actionBtn = document.querySelector('.nav-btn-js');
+  actionBtn.addEventListener('click', () => {
+    if (!revealerNav.isRevealed()) {
+      revealerNav.reveal();
+      actionBtn.setAttribute('data-open', true);
+    } else {
+      revealerNav.hide();
+      actionBtn.setAttribute('data-open', false);
+    }
+  });
 });

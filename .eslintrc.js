@@ -1,5 +1,4 @@
 module.exports = {
-  root: true,
   extends: ['airbnb-typescript/base', 'prettier/@typescript-eslint'],
   parserOptions: {
     project: './tsconfig.json',
@@ -7,5 +6,6 @@ module.exports = {
   plugins: ['jest'],
   rules: {
     'object-curly-newline': 'off',
+    'import/prefer-default-export': 'off',
   },
 };

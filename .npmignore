@@ -2,3 +2,5 @@ node_modules
 design
 docs
 __tests__/
+.editorconfig
+.eslintcache

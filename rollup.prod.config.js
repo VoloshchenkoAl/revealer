@@ -1,12 +1,19 @@
-import { terser } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
+import pkg from './package.json';
 
 export default () => ({
   input: 'src/index.ts',
-  output: {
-    name: 'revealer',
-    file: 'dist/cjs/src/index.js',
-    format: 'cjs',
-  },
-  plugins: [typescript({ tsconfig: './tsconfig.json' }), terser()],
+  output: [
+    {
+      file: pkg.main,
+      format: 'cjs',
+      exports: 'auto',
+    },
+    {
+      file: pkg.module,
+      format: 'es',
+    },
+  ],
+  plugins: [typescript(), terser()],
 });
