@@ -1,29 +1,49 @@
 var revealer = (function () {
   'use strict';
 
+  var calculateCenter = function (a0) {
+    return a0 / 2;
+  };
+  var getElementAnchorPosition = function (elementSelector, anchorSelector) {
+    var element = document.querySelector(elementSelector);
+    var anchor = document.querySelector(anchorSelector);
+    if (!element) {
+      throw new Error('Element with selector ' + elementSelector + ' have not been founded');
+    }
+    if (!anchor) {
+      throw new Error('Element with selector ' + anchorSelector + ' have not been founded');
+    }
+    var _a = element.getBoundingClientRect(),
+      elementLeft = _a.left,
+      elementTop = _a.top;
+    var _b = anchor.getBoundingClientRect(),
+      anchorLeft = _b.left,
+      anchorTop = _b.top,
+      anchorWidth = _b.width,
+      anchorHeight = _b.height;
+    return {
+      x: anchorLeft - elementLeft + calculateCenter(anchorWidth) + 'px',
+      y: anchorTop - elementTop + calculateCenter(anchorHeight) + 'px',
+    };
+  };
   var getElementCenterPosition = function (elementSelector) {
     var element = document.querySelector(elementSelector);
     if (!element) {
       throw new Error('Element with selector ' + elementSelector + ' have not been founded');
     }
-    var calculateCenter = function (a0, a1) {
-      return (a1 - a0) / 2;
-    };
     var _a = element.getBoundingClientRect(),
-      elementX = _a.x,
-      elementY = _a.y,
-      bottom = _a.bottom,
-      right = _a.right,
       left = _a.left,
-      top = _a.top;
+      top = _a.top,
+      width = _a.width,
+      height = _a.height;
     return {
-      x: left + calculateCenter(elementX, right) + 'px',
-      y: top + calculateCenter(elementY, bottom) + 'px',
+      x: left + calculateCenter(width) + 'px',
+      y: top + calculateCenter(height) + 'px',
     };
   };
   var getCircleCenterPosition = function (revealerSelector, anchorSelector, position) {
     if (typeof anchorSelector === 'string') {
-      return getElementCenterPosition(anchorSelector);
+      return getElementAnchorPosition(revealerSelector, anchorSelector);
     }
     if (
       typeof (position === null || position === void 0 ? void 0 : position.x) === 'string' &&
@@ -49,10 +69,10 @@ var revealer = (function () {
 
   /* @Helpers */
   function revealer(revealerOptions) {
+    var initialRadius = 0;
     var revealElementSelector = revealerOptions.revealElementSelector,
       options = revealerOptions.options;
     var revealBlock = document.querySelector(revealElementSelector);
-    var initialRadius = 0;
     var isReveal = false;
     var reqId = null;
     var targetRadius = initialRadius;
