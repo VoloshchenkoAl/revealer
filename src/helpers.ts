@@ -1,6 +1,34 @@
 /* @Types */
 import { Position } from './types';
 
+const calculateCenter = (a0: number): number => a0 / 2;
+
+const getElementAnchorPosition = (elementSelector: string, anchorSelector: string) => {
+  const element = document.querySelector(elementSelector);
+  const anchor = document.querySelector(anchorSelector);
+
+  if (!element) {
+    throw new Error(`Element with selector ${elementSelector} have not been founded`);
+  }
+
+  if (!anchor) {
+    throw new Error(`Element with selector ${anchorSelector} have not been founded`);
+  }
+
+  const { left: elementLeft, top: elementTop } = element.getBoundingClientRect();
+  const {
+    left: anchorLeft,
+    top: anchorTop,
+    width: anchorWidth,
+    height: anchorHeight,
+  } = anchor.getBoundingClientRect();
+
+  return {
+    x: `${anchorLeft - elementLeft + calculateCenter(anchorWidth)}px`,
+    y: `${anchorTop - elementTop + calculateCenter(anchorHeight)}px`,
+  };
+};
+
 const getElementCenterPosition = (elementSelector: string): Position => {
   const element = document.querySelector(elementSelector);
 
@@ -8,13 +36,11 @@ const getElementCenterPosition = (elementSelector: string): Position => {
     throw new Error(`Element with selector ${elementSelector} have not been founded`);
   }
 
-  const calculateCenter = (a0: number, a1: number): number => (a1 - a0) / 2;
-
-  const { x: elementX, y: elementY, bottom, right, left, top } = element.getBoundingClientRect();
+  const { left, top, width, height } = element.getBoundingClientRect();
 
   return {
-    x: `${left + calculateCenter(elementX, right)}px`,
-    y: `${top + calculateCenter(elementY, bottom)}px`,
+    x: `${left + calculateCenter(width)}px`,
+    y: `${top + calculateCenter(height)}px`,
   };
 };
 
@@ -24,7 +50,7 @@ export const getCircleCenterPosition = (
   position?: Position,
 ): Position => {
   if (typeof anchorSelector === 'string') {
-    return getElementCenterPosition(anchorSelector);
+    return getElementAnchorPosition(revealerSelector, anchorSelector);
   }
 
   if (typeof position?.x === 'string' && typeof position?.y === 'string') {
